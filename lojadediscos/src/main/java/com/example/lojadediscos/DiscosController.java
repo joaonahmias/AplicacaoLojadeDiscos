@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -60,7 +62,7 @@ public class DiscosController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/doAtualizar")
-    public void AtualizarDisco(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    public void AtualizarDisco(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
         disco = new Discos();
         disco.setId(Integer.parseInt(request.getParameter("id")));
         disco.setTitulo(request.getParameter("titulo"));
@@ -71,24 +73,20 @@ public class DiscosController {
         discoDAO.atualizarDisco(disco);
         response.setContentType("text/html");
         var writer = response.getWriter();
-        writer.println("<html><body><h1>Atualizar Disco</h1>");
-        writer.println("<hr />");
-        writer.println("<p>Disco Atualizado.</p>");
-        writer.println("</body></html>");
+        response.sendRedirect("doListar");
 
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/doDeletar")
-    public void DeletarDisco(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    public void DeletarDisco(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
         var id = Integer.parseInt(request.getParameter("id"));
         discoDAO.removerDisco(id);
         response.setContentType("text/html");
-        var writer = response.getWriter();
-        writer.println("<html><body><h1>Deletar Disco</h1>");
-        writer.println("<hr />");
-        writer.println("<p>Tarefa Excluida.</p>");
-        writer.println("</body></html>");
-
+        response.sendRedirect("/doListar");
+        /*RequestDispatcher encaminhar = request.getRequestDispatcher("/doCadastrar");
+        encaminhar.forward(request, response);
+        Taniro, um forward, só pode ser feito para entre  methods iguais. EX: post, post ou get,get
+        */   
     }
 
 
@@ -111,6 +109,7 @@ public class DiscosController {
 
         }
         writer.println("</body></html>");
+        
 
     }
 
